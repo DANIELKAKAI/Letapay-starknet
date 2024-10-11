@@ -1,0 +1,5 @@
+
+
+export const contractAddress = "0x51bff1c2003f28d7f66e75e9f582a6375d5b44e1d0a6a88ca74fef7f5787a27";
+
+//class hash = 0x6138e372d211f2851200bd0fea4f9640f7f8dc67ae53ddb09b5a504704392e4

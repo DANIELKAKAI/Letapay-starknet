@@ -2,9 +2,9 @@
 import { useAccount, useContractRead, useContractWrite, useContract } from "@starknet-react/core";
 
 import abi from '../utils/letapay-abi.json';
+import {contractAddress} from '../utils/settings';
 import React, { useState, useMemo } from "react";
 
-const contractAddress = "0x370e8d045fd18a8fe513e84fb14a6a49a559bc89a03e892efbe22ba264b4f7b";
 
 function Owner() {
     const { data, isLoading, isError, isSuccess } = useContractRead({

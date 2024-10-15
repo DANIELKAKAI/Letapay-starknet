@@ -68,7 +68,7 @@ function AddPayment() {
         }
     }
 
-
+    /*
     const calls = useMemo(() => {
         const amountAsUint256 = BigInt(amount);
 
@@ -87,6 +87,7 @@ function AddPayment() {
 
         }
     };
+    */
 
     /*
     const calls = useMemo(() => {
@@ -102,6 +103,25 @@ function AddPayment() {
         write();
     }
     */
+
+    const addPaymentCalls = useMemo(() => {
+        const amountAsUint256 = BigInt(amount);
+
+        const paymentIdAsUint256 = BigInt(paymentId);
+
+        return contract.populateTransaction["add_payment"](paymentIdAsUint256, receiverAddress, amountAsUint256);
+    }, [paymentId, receiverAddress, amount]);
+
+    const { writeAsync: write } = useContractWrite({ calls: addPaymentCalls });
+
+    const execute = async () => {
+        try {
+            const { transaction_hash } = await write();
+            console.log(transaction_hash);
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const stringifyWithBigInt = (obj: any) => {
         return JSON.stringify(obj, (key, value) =>
@@ -121,7 +141,7 @@ function AddPayment() {
             <label>Amount</label>
             <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number"></input>
 
-            <button type="button" onClick={makePayment}>
+            <button type="button" onClick={execute}>
                 Add Payment
             </button>
 

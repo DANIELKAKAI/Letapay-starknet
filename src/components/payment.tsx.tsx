@@ -1,9 +1,9 @@
-import { useAccount, useContractRead, useContractWrite, useContract } from "@starknet-react/core";
+import { useAccount, useContractRead, useContractWrite, useContract, useProvider } from "@starknet-react/core";
 import abi from '../utils/letapay-abi.json';
 import { contractAddress } from '../utils/settings';
 import React, { useState, useMemo } from "react";
 
-import { Contract, Account, RpcProvider, cairo } from 'starknet';
+//import { Contract, Account, RpcProvider, cairo } from 'starknet';
 
 
 
@@ -13,24 +13,25 @@ function AddPayment() {
     const [paymentId, setPayment] = useState(0);
     const [res, setRes] = useState<any>(null);
 
-    const acc_address = "0x22143db9e8a13fe27381b252b7de208f4be7ba8114d2971cd2b2b6879dd7bc9";
-    const private_key = "0x0000000000000000000000000000000034a70ca0e1935ed9fb08b3705a692c76";
+    //const acc_address = "0x22143db9e8a13fe27381b252b7de208f4be7ba8114d2971cd2b2b6879dd7bc9";
+    //const private_key = "0x0000000000000000000000000000000034a70ca0e1935ed9fb08b3705a692c76";
+
 
     /*
-    const { contract } = useContract({
-        abi: abi,
-        address: contractAddress,
-        account: ""
-    });
-    */
-
     const provider = new RpcProvider({
-        nodeUrl: "http://localhost:5050/rpc"
+        nodeUrl: "https://starknet-sepolia.public.blastapi.io"
     });
     const account = new Account(provider, acc_address, private_key, "1");
     let contract = new Contract(abi, contractAddress, account);
+    */
 
-    contract.connect(account);
+    const { provider } = useProvider();
+    const { contract } = useContract({
+        abi: abi,
+        address: contractAddress,
+    });
+
+    //contract.connect(account);
 
     const getPayment = () => {
         contract.get_payment(paymentId).then(res => {
@@ -117,7 +118,17 @@ function AddPayment() {
     const execute = async () => {
         try {
             const { transaction_hash } = await write();
-            console.log(transaction_hash);
+            console.log("tx hash is ", transaction_hash);
+
+            const receipt = await provider.waitForTransaction(transaction_hash);
+            console.log("Transaction receipt:", receipt);
+
+            // Check the status of the transaction
+            if (receipt.status === 1) {
+                console.log("Transaction was successful.");
+            } else {
+                console.log("Transaction failed.");
+            }
         } catch (err) {
             console.error(err);
         }
@@ -145,7 +156,7 @@ function AddPayment() {
                 Add Payment
             </button>
 
-            <button onClick={getPayment}> get payment</button>
+            <button onClick={getPayment}> Get Payment</button>
 
             <p>{res ? stringifyWithBigInt(res) : ''}</p>
         </>
